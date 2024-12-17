@@ -6,9 +6,10 @@ import { Product } from '../../../types/product';
 interface ProductTableProps {
   products: Product[];
   onDelete: (product: Product) => void;
+  onEdit: (product: Product) => void; 
 }
 
-export const ProductTable: FC<ProductTableProps> = ({ products, onDelete }) => {
+export const ProductTable: FC<ProductTableProps> = ({ products, onDelete, onEdit }) => {
   return (
     <Table responsive hover>
       <thead>
@@ -63,7 +64,10 @@ export const ProductTable: FC<ProductTableProps> = ({ products, onDelete }) => {
             <td>{new Date(product.updatedAt).toLocaleDateString('pt-BR')}</td>
             <td>
               <div className="d-flex gap-2 justify-content-end">
-                <Button variant="link" className="p-0 text-primary">
+                <Button 
+                  variant="link" 
+                  className="p-0 text-primary"
+                  onClick={() => onEdit(product)}>
                   <Pencil size={18} />
                 </Button>
                 <Button 

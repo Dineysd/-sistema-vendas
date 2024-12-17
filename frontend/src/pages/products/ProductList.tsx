@@ -1,3 +1,4 @@
+// src/pages/Products/ProductList.tsx
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, Spinner } from 'react-bootstrap';
@@ -7,11 +8,13 @@ import { ProductHeader } from './components/ProductHeader';
 import { ProductTable } from './components/ProductTable';
 import { ProductPagination } from './components/ProductPagination';
 import { DeleteProductModal } from './components/DeleteProductModal';
+import { ProductForm } from './ProductForm';
 
 export function ProductList() {
   const [page, setPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [editingProductCode, setEditingProductCode] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery<ProductListResponse>({
@@ -43,6 +46,14 @@ export function ProductList() {
     setShowDeleteModal(true);
   };
 
+  const handleEdit = (product: Product) => {
+    setEditingProductCode(product.code);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProductCode(null);
+  };
+
   const handleConfirmDelete = () => {
     if (selectedProduct) {
       deactivateProductMutation.mutate(selectedProduct.code);
@@ -70,6 +81,22 @@ export function ProductList() {
     );
   }
 
+  if (editingProductCode) {
+    return (
+      <Card>
+        <Card.Header>
+          <h5 className="m-0">Editar Produto</h5>
+        </Card.Header>
+        <Card.Body>
+          <ProductForm 
+            productCode={editingProductCode}
+            onCancel={handleCancelEdit}
+          />
+        </Card.Body>
+      </Card>
+    );
+  }
+
   return (
     <>
       <Card>
@@ -81,6 +108,7 @@ export function ProductList() {
         <ProductTable 
           products={data?.products || []}
           onDelete={handleDelete}
+          onEdit={handleEdit}
         />
 
         <ProductPagination
